@@ -1,0 +1,21 @@
+ignore:
+  - "sinergym/utils/gcloud.py"
+  - "sinergym/utils/constants.py"
+  - "sinergym/utils/env_checker.py"
+  - "sinergym/utils/callbacks.py"
+  - "sinergym/__init__.py"
+
+coverage:
+  precision: 2
+  round: nearest
+  range: 70...100
+  status:
+    project:
+      default:
+        target: 90
+    patch:
+      default:
+        target: 90
+
+codecov:
+  require_ci_to_pass: true

@@ -1,0 +1,91 @@
+{
+	"name": "sinergym",
+	"containerEnv": {
+		"WANDB_API_KEY": "${localEnv:WANDB_API_KEY}",
+		"NODE_TLS_REJECT_UNAUTHORIZED": "0",
+		"NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt"
+	},
+	"build": {
+		"args": {
+			"ENERGYPLUS_VERSION": "25.1.0",
+			"ENERGYPLUS_INSTALL_VERSION": "25-1-0",
+			"ENERGYPLUS_SHA": "1c11a3d85f",
+			"WANDB_API_KEY": "${localEnv:WANDB_API_KEY}"
+		}
+	},
+	"dockerFile": "./Dockerfile",
+	"context": "..",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash",
+						"icon": "terminal-bash"
+					},
+					"zsh": {
+						"path": "zsh"
+					},
+					"fish": {
+						"path": "fish"
+					},
+					"tmux": {
+						"path": "tmux",
+						"icon": "terminal-tmux"
+					},
+					"pwsh": {
+						"path": "pwsh",
+						"icon": "terminal-powershell"
+					}
+				},
+				"terminal.integrated.defaultProfile.linux": "bash"
+			},
+			"extensions": [
+				"poeticandroid.vscode-poetry",
+				"anysphere.cursorpyright",
+				"ms-python.black-formatter",
+				// Recomendations
+				"cameron.vscode-pytest",
+				"codecov.codecov",
+				"christian-kohler.path-intellisense",
+				"streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries",
+				"nickmillerdev.pytest-fixtures",
+				"njpwerner.autodocstring",
+				"redhat.vscode-yaml",
+				"kamilturek.vscode-pyproject-toml-snippets",
+				"ms-toolsai.jupyter",
+				"ms-toolsai.jupyter-renderers",
+				"ms-toolsai.vscode-jupyter-slideshow",
+				"charliermarsh.ruff",
+				"vscode-icons-team.vscode-icons",
+				"github.copilot",
+				"github.copilot-chat",
+				"github.github-vscode-theme",
+				"github.remotehub",
+				"github.vscode-pull-request-github",
+				"tht13.rst-vscode",
+				"trond-snekvik.simple-rst",
+				"ue.alphabetical-sorter",
+				"usernamehw.errorlens",
+				"zainchen.json",
+				"aykutsarac.jsoncrack-vscode",
+				"grapecity.gc-excelviewer",
+				"karyfoundation.idf",
+				"lextudio.restructuredtext",
+				"mechatroner.rainbow-csv",
+				"ms-ceintl.vscode-language-pack-es",
+				"ms-toolsai.datawrangler",
+				"necatiarslan.environment-variable-vscode-extension",
+				"stackbreak.comment-divider",
+				"tamasfe.even-better-toml",
+				"tomoki1207.pdf",
+				"zeshuaro.vscode-python-poetry",
+				"ue.alphabetical-sorter",
+				"fabiospampinato.vscode-diff",
+				"ecmel.vscode-html-css",
+				"adamvoss.vscode-languagetool",
+				"bierner.markdown-preview-github-styles"
+			]
+		}
+	}
+}

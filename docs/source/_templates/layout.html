@@ -1,0 +1,15 @@
+{% extends "!layout.html" %}
+
+{% block menu %}
+  {{ super() }}
+  <div class="sidebar-block github-block">
+    <h3><i class="fa fa-github"></i> GitHub</h3>
+    <ul class="simple">
+      <li><a href="https://github.com/{{ github_user }}/{{ github_repo }}" target="_blank">
+        <i class="fa fa-book"></i> Repository
+      </a></li>
+      <li><a href="https://github.com/{{ github_user }}/{{ github_repo }}/issues" target="_blank">🐞 Issues</a></li>
+      <li><a href="https://github.com/{{ github_user }}/{{ github_repo }}/releases" target="_blank">🚀 Releases</a></li>
+    </ul>
+  </div>
+{% endblock %}

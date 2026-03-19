@@ -1,0 +1,261 @@
+#:schema null
+# -------------------------------------------------------------------------- #
+#                          Sinergym package metadata                         #
+# -------------------------------------------------------------------------- #
+[project]
+
+name = "sinergym"
+version = "3.11.3"
+description = "Sinergym provides a Gymnasium-based interface to interact with building simulations. This allows control in simulation time through custom controllers, including reinforcement learning agents"
+
+authors = [
+    { name = "Alejandro Campoy Nieves", email = "alejandroac79@gmail.com" },
+    { name = "Antonio Manjavacas" },
+    { name = "Javier Jiménez" },
+    { name = "Miguel Molina" },
+    { name = "Juan Gómez" },
+]
+
+maintainers = [
+    { name = "Alejandro Campoy Nieves", email = "alejandroac79@gmail.com" },
+    { name = "Antonio Manjavacas"}
+]
+
+license = "MIT"
+
+license-files = ["LICENSE"]
+
+readme = "README.md"
+
+keywords = [
+    "deep-reinforcement-learning",
+    "buildings",
+    "simulation",
+    "control",
+    "energy-optimization",
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+# --------- PEP 621 compatible dependencies system (pip, build, flit ...) ----- #
+requires-python = ">=3.12"
+
+dependencies = [
+    "gymnasium>=1.2.0",
+    "numpy>=2.3.2",
+    "pandas>=2.3.1",
+    "eppy>=0.5.63",
+    "tqdm>=4.67.1",
+    "xlsxwriter>=3.2.5",
+    "epw>=1.2.dev2",
+    "pyyaml>=6.0.2",
+]
+
+
+# Optional dependencies (extras)
+[project.optional-dependencies]
+
+
+wandb = ["wandb>=0.21.1"]
+test = ["pytest>=8.4.1", "pytest-cov>=6.2.1", "pytest-xdist>=3.8.0", "coverage>=7.10.4", "wandb>=0.21.1"]
+drl = ["stable-baselines3>=2.7.0", "wandb>=0.21.1", "sb3-contrib>=2.7.0"]
+notebooks = ["IPython>=9.4.0"]
+gcloud = ["google-api-python-client>=2.179.0", "oauth2client>=4.1.3", "google-cloud-storage>=3.3.0"]
+plots = ["plotly>=6.5.2"]
+extras = [
+    "wandb>=0.21.1",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-xdist>=3.8.0",
+    "coverage>=7.10.4",
+    "stable-baselines3>=2.7.0",
+    "sb3-contrib>=2.7.0",
+    "IPython>=9.4.0",
+    "google-api-python-client>=2.179.0",
+    "oauth2client>=4.1.3",
+    "google-cloud-storage>=3.3.0",
+    "plotly>=6.5.2",
+]
+
+# ---------------------------- Project URLs ---------------------------- #
+[project.urls]
+Homepage = "https://github.com/ugr-sail/sinergym"
+Repository = "https://github.com/ugr-sail/sinergym"
+Documentation = "https://ugr-sail.github.io/sinergym"
+
+# -------------------------------------------------------------------------- #
+#                        Poetry-specific configuration                       #
+# -------------------------------------------------------------------------- #
+[tool.poetry]
+package-mode = true
+
+# Include (equivalent to MANIFEST.in)
+include = ["sinergym/data/**"]
+# Part of proyect you want to exclude in packaging
+# exclude = []
+
+# -------------------- Dependencies (Poetry management) -------------------- #
+[tool.poetry.group.format]
+optional = true
+
+[tool.poetry.group.format.dependencies]
+black = {version = ">=25.1.0", extras = ["jupyter"]}
+ruff = ">=0.12.9"
+pipdeptree = ">=2.28.0"
+
+[tool.poetry.group.typing]
+optional = true
+
+[tool.poetry.group.typing.dependencies]
+pyright = ">=1.1.403"
+
+[tool.poetry.group.platforms]
+optional = true
+
+[tool.poetry.group.platforms.dependencies]
+wandb = ">=0.21.1"
+
+[tool.poetry.group.notebooks]
+optional = true
+
+[tool.poetry.group.notebooks.dependencies]
+IPython = ">=9.4.0"
+
+[tool.poetry.group.test]
+optional = true
+include-groups = ["platforms"]
+
+[tool.poetry.group.test.dependencies]
+pytest = ">=8.4.1"
+pytest-cov = ">=6.2.1"
+pytest-xdist = ">=3.8.0"
+coverage = ">=7.10.4"
+
+[tool.poetry.group.doc]
+optional = true
+include-groups = ["notebooks"]
+
+[tool.poetry.group.doc.dependencies]
+# sphinx-multiversion is incompatible with Sphinx 9.x (Config.read() API change). Keep <9 until fixed.
+sphinx = ">=8.2.3,<9.0"
+sphinx-rtd-theme = ">=3.0.2"
+sphinxcontrib-spelling = ">=8.0.1"
+sphinxcontrib-jquery = ">=4.1"
+sphinx-multitoc-numbering = ">=0.1.3"
+sphinx-multiversion = ">=0.2.4"
+pyenchant = ">=3.2.2"
+nbsphinx = ">=0.9.6"
+nbsphinx_link = ">=1.3.1"
+mock = ">=5.2.0"
+docutils = "<0.22"
+
+[tool.poetry.group.drl]
+optional = true
+include-groups = ["platforms"]
+
+[tool.poetry.group.drl.dependencies]
+stable-baselines3 = ">=2.7.0"
+sb3-contrib = ">=2.7.0"
+
+[tool.poetry.group.gcloud]
+optional = true
+
+[tool.poetry.group.gcloud.dependencies]
+google-api-python-client = ">=2.179.0"
+oauth2client = ">=4.1.3"
+google-cloud-storage = ">=3.3.0"
+
+[tool.poetry.group.plots]
+optional = true
+
+[tool.poetry.group.plots.dependencies]
+plotly = ">=6.5.2"
+
+[tool.poetry.group.dev]
+optional = true
+include-groups = [
+    "format", 
+    "typing", 
+    "test", 
+    "doc", 
+    "notebooks", 
+    "drl", 
+    "gcloud",
+    "plots"
+]
+
+# Entry points 
+# [tool.poetry.scripts]
+# sinergym = "sinergym.cli:main"
+
+# -------------------------------------------------------------------------- #
+#                           third parties settings                           #
+# -------------------------------------------------------------------------- #
+
+# ------------------------- Type checking (pyright) ------------------------ #
+[tool.pyright]
+include = ["sinergym", "scripts", "tests", "docs", "examples"]
+typeCheckingMode = "basic"
+# Only type-checking, for the rest use black and ruff
+reportMissingImports = false
+reportUnusedImport = false
+reportMissingModuleSource = false
+reportMissingTypeStubs = false
+reportOptionalMemberAccess = false
+reportAttributeAccessIssue = false
+reportUnusedVariable = true
+
+# ------------------------- Code formatting (black) ------------------------ #
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+skip-string-normalization = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | \.mypy_cache
+  | \.pytest_cache
+  | build
+  | dist
+  | venv
+)/
+'''
+
+# ------------------------- Import sorting (ruff) ------------------------- #
+[tool.ruff]
+# Apply autofix where possible
+fix = false
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "venv",
+    ".mypy_cache",
+    ".pytest_cache"
+]
+
+
+[tool.ruff.lint]
+select = [
+    # "F",  # Pyflakes: unused variables/imports, simple errors
+    "I",  # Isort-like: import order
+    # "E",  # Pycodestyle: minor style errors
+]
+
+[tool.ruff.lint.isort]
+known-third-party = ["wandb", "stable_baselines3", "gymnasium"]
+known-first-party = ["sinergym"]
+
+# -------------------------------------------------------------------------- #
+#                         Poetry build configuration                         #
+# -------------------------------------------------------------------------- #
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

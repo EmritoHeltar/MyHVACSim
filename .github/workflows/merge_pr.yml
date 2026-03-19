@@ -1,0 +1,161 @@
+name: "PR merge workflow"
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  apply-black-ruff:
+    name: black and ruff auto-format by a bot
+    runs-on: ubuntu-24.04
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ vars.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
+      - name: Install black and ruff
+        run: poetry install --no-interaction --only format
+
+      - name: Apply ruff
+        id: ruff
+        run: poetry run ruff check . --fix
+        continue-on-error: true
+
+      - name: apply black
+        id: black
+        run: poetry run black --check .
+        continue-on-error: true
+
+      - name: Commit format changes
+        if: steps.black.outcome != 'success' || steps.ruff.outcome != 'success'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Automatic format fixes (black + ruff)
+
+  apply-documentation:
+    needs: [apply-black-ruff]
+    runs-on: ubuntu-24.04
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ vars.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      
+      - name: Verify documentation update
+        uses: dorny/paths-filter@v3
+        id: verify-documentation-update
+        with:
+          filters: |
+            doc:
+              - 'docs/source/**'
+
+      - name: Install dependencies
+        if: steps.verify-documentation-update.outputs.doc == 'true'
+        run: |
+          sudo apt install python3-enchant
+          sudo apt install pandoc
+          poetry install --no-interaction --with doc
+        
+      - name: Build multiversion docs
+        if: steps.verify-documentation-update.outputs.doc == 'true'
+        run: poetry run sphinx-multiversion docs/source docs/compilation
+
+      - name: Deploy to GitHub Pages
+        if: steps.verify-documentation-update.outputs.doc == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/compilation
+          publish_branch: github-pages
+          destination_dir: docs/compilation
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          keep_files: false
+          enable_jekyll: true
+
+  tests:
+    needs: [apply-black-ruff]
+    name: tests execution and CodeCov upload
+    runs-on: ubuntu-24.04
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build the latest Docker image
+        run: docker build . --file Dockerfile --build-arg SINERGYM_EXTRAS="test" --tag pushmain/sinergym:latest
+
+      - name: Create a shared folder for coverage output
+        run: mkdir shared
+
+      - name: Execute tests from container
+        run: docker run -v ${GITHUB_WORKSPACE}/shared:/shared -t pushmain/sinergym:latest /bin/bash -c 'pytest -vv --cov sinergym --cov-report=xml tests/ && mv coverage.xml /shared'
+
+      - name: Upload to CodeCov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: /home/runner/work/sinergym/sinergym/shared/coverage.xml
+          fail_ci_if_error: true
+          verbose: true
+
+  update-dockerhub:
+    needs: [apply-black-ruff]
+    env:
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    # If you don't have secrets configured with docker credential, this job will be skipped
+    name: Container build and upload in Docker Hub
+    runs-on: ubuntu-24.04
+    steps:
+
+      - name: Checkout code
+        if: "${{ env.DOCKER_USER != '' && env.DOCKER_PASSWORD != '' }}"
+        uses: actions/checkout@v4
+
+      - name: Build the latest Docker image
+        if: "${{ env.DOCKER_USER != '' && env.DOCKER_PASSWORD != '' }}"
+        run: docker build . --file Dockerfile --build-arg SINERGYM_EXTRAS="extras" --tag $DOCKER_USER/sinergym:latest
+      
+      - name: Build the latest lite Docker image
+        if: "${{ env.DOCKER_USER != '' && env.DOCKER_PASSWORD != '' }}"
+        run: docker build . --file Dockerfile --build-arg SINERGYM_EXTRAS="test" --tag $DOCKER_USER/sinergym:latest-lite
+      
+      - name: Login in Docker Hub account
+        if: "${{ env.DOCKER_USER != '' && env.DOCKER_PASSWORD != '' }}"
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      
+      - name: Push container with all extras
+        if: "${{ env.DOCKER_USER != '' && env.DOCKER_PASSWORD != '' }}"
+        run: docker push $DOCKER_USER/sinergym:latest
+      
+      - name: Push container used with test
+        if: "${{ env.DOCKER_USER != '' && env.DOCKER_PASSWORD != '' }}"
+        run: docker push $DOCKER_USER/sinergym:latest-lite

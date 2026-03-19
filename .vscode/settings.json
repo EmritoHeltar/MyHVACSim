@@ -1,0 +1,35 @@
+{
+    "editor.formatOnSave": true,
+    "files.autoSave": "onWindowChange",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always"
+    },
+    "cursorpyright.analysis.diagnosticMode": "workspace",
+
+    "cSpell.import": ["./.vscode/cspell.yml"],
+
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "black-formatter.args": [
+        "--line-length=88"
+    ],
+
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "--cov=.",
+        "tests/",
+        "--cov-report",
+        "xml:cov.xml"
+    ],
+
+    "files.associations": {
+        "*.pyyaml": "yaml"
+    },
+
+    "editor.minimap.enabled": true,
+    "editor.minimap.scale": 3,
+    "editor.minimap.maxColumn": 88,
+    "editor.minimap.renderCharacters": true,
+    "editor.minimap.side": "right",
+
+}

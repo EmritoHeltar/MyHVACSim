@@ -1,0 +1,51 @@
+import logging
+
+import gymnasium as gym
+import numpy as np
+
+import sinergym
+from sinergym.utils.logger import TerminalLogger
+from sinergym.utils.wrappers import (
+    CSVLogger,
+    DatetimeWrapper,
+    LoggerWrapper,
+    NormalizeAction,
+    NormalizeObservation,
+)
+
+# Logger
+terminal_logger = TerminalLogger()
+logger = terminal_logger.getLogger(name='MAIN', level=logging.INFO)
+
+# Create environment and apply wrappers for normalization and logging
+env = gym.make('Eplus-5zone-hot-continuous-stochastic-v1')
+env = DatetimeWrapper(env)
+env = NormalizeAction(env)
+env = NormalizeObservation(env)
+env = LoggerWrapper(env)
+env = CSVLogger(env)
+
+# Execute 1 episode
+episodes = 1
+for i in range(episodes):
+
+    # Reset the environment to start a new episode
+    obs, info = env.reset()
+    truncated = terminated = False
+
+    while not (terminated or truncated):
+
+        # Random action selection
+        a = env.action_space.sample()
+
+        # Perform action and receive env information
+        obs, reward, terminated, truncated, info = env.step(a)
+
+    logger.info(f'Episode {env.get_wrapper_attr("episode")} finished.')
+
+logger.info(
+    'You can get a dictionary of the observation if you want to check something, independently of the changes made to the observation by the wrappers:'
+)
+logger.info(env.get_obs_dict(obs))
+
+env.close()
